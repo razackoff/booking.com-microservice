@@ -1,0 +1,90 @@
+version: '3'
+
+services:
+  authorization_database_postgresql_container:
+    image: postgres:latest
+    container_name: authorization_database_postgresql_container
+    environment:
+      POSTGRES_DB: authorization_database
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: passwordpassword
+    volumes:
+      - authorization_database_postgresql_data:/var/lib/postgresql/data
+    expose:
+      - 2210
+    networks:
+      - booking_network
+
+  hotels_database_postgresql_container:
+    image: postgres:latest
+    container_name: hotels_database_postgresql_container
+    environment:
+      POSTGRES_DB: hotels_database
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: passwordpassword
+    volumes:
+      - hotels_database_postgresql_data:/var/lib/postgresql/data
+    expose:
+      - 2220
+    networks:
+      - booking_network
+    
+
+  flights_database_postgresql_container:
+    image: postgres:latest
+    container_name: flights_database_postgresql_container
+    environment:
+      POSTGRES_DB: flights_database
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: passwordpassword
+    volumes:
+      - flights_database_postgresql_data:/var/lib/postgresql/data
+    expose:
+      - 2230
+    networks:
+      - booking_network
+
+  payments_database_postgresql_container:
+    image: postgres:latest
+    container_name: payments_database_postgresql_container
+    environment:
+      POSTGRES_DB: payments_database
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: passwordpassword
+    volumes:
+      - payments_database_postgresql_data:/var/lib/postgresql/data
+    expose:
+      - 2240
+    networks:
+      - booking_network
+
+  hotel_booking_service:
+    image: hotel-booking-service:v1.0.0
+    ports:
+      - "3320:8080"
+    environment:
+      - DATABASE_HOST=hotels_database_postgresql_container
+      - DATABASE_PORT=2220
+      - DATABASE_NAME=hotels_database
+      - DATABASE_USER=user
+      - DATABASE_PASSWORD=passwordpassword
+    networks:
+      - booking_network
+
+  adminer:
+    image: adminer
+    container_name: adminer_container
+    ports:
+      - "8080:8080"
+    networks:
+      - booking_network
+
+networks:
+  booking_network:
+    driver: bridge
+
+volumes:
+  authorization_database_postgresql_data:
+  hotels_database_postgresql_data:
+  flights_database_postgresql_data:
+  payments_database_postgresql_data:
